@@ -1,0 +1,86 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- NFC signal waves (top-right) -->
+    <path
+        android:pathData="M72,36 A12,12 0 0,1 84,48"
+        android:strokeColor="#4FC3F7"
+        android:strokeWidth="2.5"
+        android:fillColor="#00000000"
+        android:strokeLineCap="round"/>
+    <path
+        android:pathData="M72,30 A18,18 0 0,1 90,48"
+        android:strokeColor="#4FC3F7"
+        android:strokeWidth="2.5"
+        android:fillColor="#00000000"
+        android:strokeLineCap="round"
+        android:strokeAlpha="0.7"/>
+    <path
+        android:pathData="M72,24 A24,24 0 0,1 96,48"
+        android:strokeColor="#4FC3F7"
+        android:strokeWidth="2.5"
+        android:fillColor="#00000000"
+        android:strokeLineCap="round"
+        android:strokeAlpha="0.4"/>
+
+    <!-- Shield body -->
+    <path
+        android:pathData="M54,28 L54,28 C54,28 36,32 30,34 L30,56 C30,68 40,78 54,82 C68,78 78,68 78,56 L78,34 C72,32 54,28 54,28 Z"
+        android:fillColor="#1565C0"/>
+
+    <!-- Shield highlight -->
+    <path
+        android:pathData="M54,28 L54,28 C54,28 36,32 30,34 L30,56 C30,68 40,78 54,82 C68,78 78,68 78,56 L78,34 C72,32 54,28 54,28 Z"
+        android:fillColor="#1E88E5"
+        android:fillAlpha="0.3"/>
+
+    <!-- Shield inner border -->
+    <path
+        android:pathData="M54,32 C54,32 39,35.5 34,37 L34,55 C34,65 42.5,73.5 54,77 C65.5,73.5 74,65 74,55 L74,37 C69,35.5 54,32 54,32 Z"
+        android:strokeColor="#42A5F5"
+        android:strokeWidth="1.5"
+        android:fillColor="#00000000"/>
+
+    <!-- Key icon inside shield -->
+    <path
+        android:pathData="M50,50 A6,6 0 1,1 50,50.01"
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2.5"/>
+    <path
+        android:pathData="M56,50 L66,50 L66,54 L63,54 L63,50"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2.5"
+        android:fillColor="#00000000"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"/>
+
+    <!-- Key circle fill -->
+    <path
+        android:pathData="M50,50 m-4,0 a4,4 0 1,0 8,0 a4,4 0 1,0 -8,0"
+        android:fillColor="#4FC3F7"/>
+
+    <!-- PM3 text -->
+    <path
+        android:pathData="M42,62 L44.5,62 C46,62 47,62.8 47,64 C47,65.2 46,66 44.5,66 L42,66 L42,69 Z"
+        android:fillColor="#FFFFFF"/>
+    <path
+        android:pathData="M49,62 L51,66 L53,62 L55,62 L55,69 L53.5,69 L53.5,65 L51.5,68 L50.5,68 L48.5,65 L48.5,69 L49,62 Z"
+        android:fillColor="#FFFFFF"/>
+    <path
+        android:pathData="M57,65 L57,63.5 C57,62.5 58,62 59,62 L61.5,62 C62.5,62 63.5,62.5 63.5,63.5 L63.5,64.5 C63.5,65.5 62.5,66 61.5,66 L59,66 L59,69 L57,69 Z"
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.0"/>
+
+    <!-- "3" glyph -->
+    <path
+        android:pathData="M58,62 L62,62 L62,64.5 L60,64.5 L62,64.5 L62,67 L62,69 L58,69"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="1.8"
+        android:fillColor="#00000000"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"/>
+</vector>

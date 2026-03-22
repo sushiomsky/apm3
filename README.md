@@ -1,149 +1,197 @@
-# PM3 Companion
+<div align="center">
 
-<p align="center">
-  <strong>Professional Android companion app for Proxmark3 devices</strong><br>
-  Commandless UX • USB OTG • MIFARE Analysis • Multi-Reader Support
-</p>
+# 🛡️ PM3 Companion
+
+### The Professional Android App for Proxmark3
+
+**Turn your phone into a powerful RFID/NFC security toolkit.**
+
+[![Android CI](https://github.com/sushiomsky/apm3/actions/workflows/android.yml/badge.svg)](https://github.com/sushiomsky/apm3/actions)
+[![API 26+](https://img.shields.io/badge/API-26%2B-brightgreen.svg)](https://android-arsenal.com/api?level=26)
+[![License](https://img.shields.io/badge/license-Proprietary-red.svg)]()
+
+[Download APK](#download) · [Features](#features) · [Screenshots](#screenshots) · [Getting Started](#getting-started)
+
+</div>
 
 ---
 
-## Overview
+## Why PM3 Companion?
 
-PM3 Companion transforms complex RFID/NFC security operations into a tappable, guided experience. No command-line knowledge required — every Proxmark3 action is exposed as a card with safety levels, prerequisites, and one-tap execution.
+Every existing Proxmark3 app forces you to memorize arcane terminal commands. **PM3 Companion doesn't.** Every operation is a tappable card with safety ratings, live feedback, and guided workflows.
 
-**Supports:** Proxmark3 Easy, RDV2, RDV4 via USB OTG  
-**Also works with:** Built-in Android NFC and ACR USB readers  
-**Target:** Android 8.0+ (API 26), tested on Samsung Galaxy S9+ (Android 10)
+| Problem | PM3 Companion Solution |
+|---------|----------------------|
+| 🤯 Memorize `hf mf autopwn -s 0 -a -k FFFFFFFFFFFF` | ✅ Tap "Key Recovery" → watch the sector map fill in |
+| 💀 Accidentally brick a tag with wrong write command | ✅ Destructive actions require double confirmation |
+| 📖 No idea which attack to use on unknown tags | ✅ AI-powered attack recommendation based on chip type |
+| 🔌 Carry a laptop everywhere for PM3 | ✅ Full PM3 control from your phone via USB OTG |
+
+---
 
 ## Features
 
-### 🎯 Commandless UX
-- **94 PM3 features** organized into 17 categories
-- Safety levels: ✅ Safe (one-tap) · ⚠️ Advanced (confirmation) · 🔴 Destructive (double confirm)
-- Typed parameters with validation (text, number, boolean, choice)
-- Feature search and favorites
-
-### 📡 USB Communication
-- PM3 NG binary protocol with automatic packet framing
-- 3-tier USB I/O: Sync → Async → libusb JNI fallback
-- Real-time terminal with color-coded output
-- Protocol inspector for raw hex frames
-
-### 🔐 MIFARE Analysis
-- **Live sector map** — color-coded grid updates as keys are discovered
-- **Attack pipeline** — Dictionary → Fudan → Nested → Hardnested → Darkside
-- **FM11RF08S detection** — auto-identifies Fudan chips with backdoor key extraction
-- **Dump viewer** — hex view with sector/block navigation
-- **Dump comparison** — side-by-side diff of two dumps
+### 🎯 94 One-Tap Actions
+Every Proxmark3 command reimagined as a tappable card with safety levels:
+- **✅ Safe** — one tap to execute (scans, reads, device info)
+- **⚠️ Advanced** — confirmation required (key recovery, simulation)
+- **🔴 Destructive** — double confirm with warning (writes, flashing)
 
 ### 🏋️ Gym Locker Workflow
-5-phase interactive wizard for access control analysis:
-1. **Identify** — tag type, UID, ATQA/SAK, vulnerability assessment
-2. **Recover Keys** — smart attack recommendation based on chip type
-3. **Read Dump** — full memory extraction with one-tap commands
-4. **Analyze** — access pattern detection, Gantner GL7p identification
-5. **Clone** — emulate/write workflow with legal warnings
+The world's first **5-phase guided gym locker analysis** on mobile:
+1. **Identify** — auto-detect Fudan FM11RF08S, extract backdoor keys
+2. **Recover** — smart attack pipeline (Dictionary → Fudan → Nested → Darkside)
+3. **Dump** — full memory extraction with progress tracking
+4. **Analyze** — identify Gantner GL7p access patterns, decode sector data
+5. **Clone** — step-by-step emulation with legal compliance warnings
+
+### 🔐 Live Key Recovery
+Watch keys appear in real-time on an animated sector map:
+- Color-coded sectors (🟢 found · 🟡 attacking · 🔴 locked · ⚫ unknown)
+- Sequential attack pipeline with automatic escalation
+- FM11RF08S backdoor key extraction (A396EFA4E24F)
+- Export recovered keys as text
+
+### 📡 Multi-Reader Support
+| Reader | Capabilities |
+|--------|-------------|
+| **Proxmark3** (USB OTG) | Full: read, write, emulate, attack, clone |
+| **Built-in NFC** | Read tags, write NDEF, MIFARE Classic auth |
+| **ACR USB** (CCID) | Read smart cards, extract UIDs |
 
 ### 🧩 Plugin System
-- Plugin browser with 12 built-in analysis tools
-- Custom workflow builder with step-by-step command sequences
-- Script editor with PM3/Lua support and syntax highlighting
+- **12 built-in plugins** — analyzers, cloners, decoders
+- **Workflow Builder** — chain PM3 commands into reusable sequences
+- **Script Editor** — PM3/Lua scripting with syntax highlighting
 
-### 📱 Multi-Reader Support
-| Reader | Tag Read | Tag Write | Commands | Key Recovery |
-|--------|----------|-----------|----------|--------------|
-| Proxmark3 (USB) | ✅ | ✅ | ✅ Full | ✅ |
-| Built-in NFC | ✅ | ✅ NDEF | ❌ | ❌ |
-| ACR USB (CCID) | ✅ | ❌ | ❌ | ❌ |
+### 🖥️ Advanced Mode
+For power users who want raw access:
+- Direct PM3 command input with autocomplete
+- Protocol inspector (raw hex frames)
+- Command execution metrics & timing
+- Full terminal with ANSI color support
 
 ### 📤 Data Export
-- Export tags as JSON/CSV
-- Export MIFARE dumps as hex
-- Export recovered keys
-- Share terminal logs
-- Android share intent integration
+- Tags → JSON / CSV
+- MIFARE dumps → hex text
+- Recovered keys → formatted table
+- Terminal logs → timestamped text
+- Android Share intent for instant forwarding
+
+---
 
 ## Screenshots
 
-| Home | Tools | Terminal | Gym Workflow |
-|------|-------|----------|--------------|
-| Dashboard with connection status, quick actions, last scan | Feature catalog with search, MIFARE tools, plugins | Live PM3 output with command input | 5-phase guided analysis |
+<div align="center">
 
-## Build
+| Home Dashboard | Feature Catalog | Live Terminal |
+|:-:|:-:|:-:|
+| Connection status, quick actions, last scan | 94 features with search, safety labels, favorites | Real-time PM3 output with color coding |
 
-### Prerequisites
-- Android Studio Hedgehog or later
+| Gym Workflow | Sector Map | Attack Pipeline |
+|:-:|:-:|:-:|
+| 5-phase guided analysis wizard | Live key recovery visualization | Smart attack recommendation engine |
+
+</div>
+
+---
+
+## Getting Started
+
+### What You Need
+- Android phone with **USB OTG** support (Android 8.0+)
+- **Proxmark3** device (Easy, RDV2, RDV4, or clone)
+- USB OTG adapter (USB-C or Micro-USB)
+
+### Quick Start
+1. **Install** the APK on your phone
+2. **Connect** Proxmark3 via USB OTG adapter
+3. **Grant** USB permission when prompted
+4. **Tap** "Scan HF Tag" — hold a card to the PM3 antenna
+5. **Done** — tag info appears instantly
+
+### Supported Hardware
+| Device | VID:PID | Status |
+|--------|---------|--------|
+| PM3 Easy (clone) | 9AC4:4B8F | ✅ Tested |
+| PM3 RDV2 | 9AC4:4B8F | ✅ Supported |
+| PM3 RDV4 | 9AC4:4B8F | ✅ Supported |
+| ACR122U | 072F:2200 | ✅ Supported |
+| ACR1252U | 072F:0901 | ✅ Supported |
+
+---
+
+## Build from Source
+
+```bash
+# Clone
+git clone https://github.com/sushiomsky/apm3.git
+cd apm3
+
+# Build debug APK
+./gradlew app:assembleDebug
+
+# Run tests (125 unit tests)
+./gradlew app:testDebugUnitTest
+
+# Install on device
+adb install -r app/build/outputs/apk/debug/app-debug.apk
+```
+
+### Requirements
 - JDK 17
 - Android SDK 34
-- NDK 26.1.10909125
+- NDK 26.1.10909125 (for libusb JNI)
 - CMake 3.22.1
 
-### Build Debug APK
-```bash
-./gradlew app:assembleDebug
-```
-
-### Run Tests
-```bash
-./gradlew app:testDebugUnitTest
-```
-
-### Lint
-```bash
-./gradlew app:lintDebug
-```
+---
 
 ## Architecture
 
 ```
-┌─────────────┐     ┌──────────────┐     ┌────────────────┐
-│  Compose UI │────▶│ MainViewModel│────▶│ProxmarkRepository│
-│  (4 tabs)   │     │  (StateFlow) │     │  (business)     │
-└─────────────┘     └──────────────┘     └────────┬────────┘
-                                                   │
-                    ┌──────────────────────────────┤
-                    │                    │          │
-              ┌─────▼─────┐    ┌────────▼──┐  ┌───▼────────┐
-              │ProxmarkClient│  │NFC Reader │  │ACR Reader  │
-              │(PM3 protocol)│  │(Android)  │  │(CCID/USB)  │
-              └──────┬──────┘  └───────────┘  └────────────┘
-                     │
-              ┌──────▼──────┐
-              │UsbManager   │
-              │(libusb JNI) │
-              └─────────────┘
+UI (Compose) → ViewModel (StateFlow) → Repository → Protocol Layer → USB
 ```
 
-**Key patterns:**
-- Single-module app with manual DI via `AppContainer`
-- `MainUiState` data class drives all Compose UI
-- `StateFlow`/`SharedFlow` between layers
-- Feature execution serialized via mutex
-- Terminal lines buffered (last 500)
+- **Single-module** Compose app with manual DI
+- **PM3 NG binary protocol** with CRC validation
+- **libusb JNI** fallback for reliable USB bulk transfers
+- **125 unit tests** covering parsers, state machines, and catalog invariants
 
-## Project Structure
+<details>
+<summary>📁 Project Structure</summary>
 
 ```
 app/src/main/java/com/sushiomsky/proxmark/
-├── features/          # Feature catalog, parameters, safety levels
-├── mifare/            # Key state, dumps, workflows, comparison
-├── persistence/       # DataStore for tags and settings
-├── plugins/           # Plugin models and catalog
-├── protocol/          # PM3 NG protocol, client, output parser
-├── reader/            # Multi-reader abstraction (PM3, NFC, ACR)
-├── repository/        # Business logic, state management
-├── ui/                # Compose screens and components
-│   ├── components/    # Dialogs, cards, visualizations
-│   └── theme/         # Material 3 dark theme
-├── usb/               # USB host, connection state, libusb bridge
-└── viewmodel/         # UI state and actions
+├── features/        # 94-feature catalog with safety levels
+├── mifare/          # Key state, dumps, workflows, comparison
+├── persistence/     # DataStore (tags, settings)
+├── plugins/         # Plugin models and built-in catalog
+├── protocol/        # PM3 NG protocol, output parser
+├── reader/          # Multi-reader abstraction
+├── repository/      # Business logic, state management
+├── export/          # JSON/CSV/hex data export
+├── ui/              # Compose screens + 15 component dialogs
+├── usb/             # USB host + libusb JNI bridge
+└── viewmodel/       # UI state (80+ fields) and actions
 ```
+</details>
 
-## License
+---
 
-Private repository. All rights reserved.
+## Download
 
-## Acknowledgments
+> 🚧 **Coming soon to Google Play**
+>
+> In the meantime, grab the latest APK from [Releases](https://github.com/sushiomsky/apm3/releases).
 
-- [Proxmark3 Iceman Fork](https://github.com/RfidResearchGroup/proxmark3) — firmware and protocol reference
-- [libusb](https://libusb.info/) — USB host library for Android JNI
+---
+
+## Contributing
+
+This is a proprietary project. For feature requests or bug reports, please open an issue.
+
+---
+
+<div align="center">
+  <sub>Built with ❤️ for the RFID security research community</sub>
+</div>
