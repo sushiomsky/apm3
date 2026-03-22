@@ -54,6 +54,9 @@ fun ToolsScreen(
     onShowKeyRecovery: () -> Unit,
     onShowGymLockerWorkflow: () -> Unit,
     onToggleAdvancedMode: () -> Unit,
+    onShowPluginBrowser: () -> Unit,
+    onShowWorkflowBuilder: () -> Unit,
+    onShowScriptEditor: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val groupedFeatures = features.groupBy { it.category }
@@ -159,6 +162,108 @@ fun ToolsScreen(
                 onSetDump2 = onSetDump2,
                 onClearDumpComparison = onClearDumpComparison
             )
+        }
+
+        // ── Plugins & Scripts ──────────────────────────────────────
+        item {
+            Text(
+                "Plugins & Scripts",
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+        }
+
+        item {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer
+                ),
+                onClick = onShowPluginBrowser
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            "\uD83E\uDDE9 Plugin Store",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Text(
+                            "Browse, install & manage plugins for your Proxmark3",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f)
+                        )
+                    }
+                    Text("→", style = MaterialTheme.typography.titleLarge)
+                }
+            }
+        }
+
+        item {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer
+                ),
+                onClick = onShowWorkflowBuilder
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            "\uD83D\uDD27 Workflow Builder",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Text(
+                            "Create custom multi-step command workflows",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f)
+                        )
+                    }
+                    Text("→", style = MaterialTheme.typography.titleLarge)
+                }
+            }
+        }
+
+        item {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer
+                ),
+                onClick = onShowScriptEditor
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            "\uD83D\uDCDD Script Editor",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Text(
+                            "Write & run PM3 scripts and Lua programs",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f)
+                        )
+                    }
+                    Text("→", style = MaterialTheme.typography.titleLarge)
+                }
+            }
         }
 
         // Feature categories

@@ -8,8 +8,13 @@ import com.example.proxmark.mifare.DumpComparison
 import com.example.proxmark.mifare.MifareClassicDump
 import com.example.proxmark.mifare.MifareWorkflow
 import com.example.proxmark.persistence.ThemeMode
+import com.example.proxmark.plugins.CustomWorkflow
+import com.example.proxmark.plugins.Plugin
+import com.example.proxmark.plugins.PluginCatalog
+import com.example.proxmark.plugins.ScriptFile
 import com.example.proxmark.reader.ReaderType
 import com.example.proxmark.repository.ProxmarkRepository
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -329,6 +334,131 @@ class MainViewModel(private val repository: ProxmarkRepository) : ViewModel() {
     fun runGymWorkflowCommand(command: String, title: String) {
         viewModelScope.launch {
             repository.runFeatureByCommand(command, title)
+        }
+    }
+
+    // ── Plugin System ────────────────────────────────────────────────
+
+    fun showPluginBrowser() {
+        _uiState.update { it.copy(showPluginBrowser = true) }
+    }
+
+    fun hidePluginBrowser() {
+        _uiState.update { it.copy(showPluginBrowser = false) }
+    }
+
+    fun installPlugin(pluginId: String) {
+        _uiState.update { state ->
+            val updated = getAllPlugins(state).map { p ->
+                if (p.id == pluginId) p.copy(installed = true, enabled = true) else p
+            }
+            state.copy(installedPlugins = updated.filter { it.installed })
+        }
+    }
+
+    fun uninstallPlugin(pluginId: String) {
+        _uiState.update { state ->
+            val updated = getAllPlugins(state).map { p ->
+                if (p.id == pluginId) p.copy(installed = false, enabled = false) else p
+            }
+            state.copy(installedPlugins = updated.filter { it.installed })
+        }
+    }
+
+    fun togglePluginEnabled(pluginId: String) {
+        _uiState.update { state ->
+            state.copy(
+                installedPlugins = state.installedPlugins.map { p ->
+                    if (p.id == pluginId) p.copy(enabled = !p.enabled) else p
+                }
+            )
+        }
+    }
+
+    /** Merge catalog defaults with current installed state. */
+    fun getAllPluginsForBrowser(): List<Plugin> = getAllPlugins(_uiState.value)
+
+    private fun getAllPlugins(state: MainUiState): List<Plugin> {
+        val installedMap = state.installedPlugins.associateBy { it.id }
+        return PluginCatalog.builtInPlugins.map { catalogPlugin ->
+            installedMap[catalogPlugin.id] ?: catalogPlugin
+        }
+    }
+
+    fun showPluginWorkflowBuilder(workflow: CustomWorkflow? = null) {
+        _uiState.update { it.copy(showWorkflowBuilder = true, editingWorkflow = workflow) }
+    }
+
+    fun hidePluginWorkflowBuilder() {
+        _uiState.update { it.copy(showWorkflowBuilder = false, editingWorkflow = null) }
+    }
+
+    fun saveWorkflow(workflow: CustomWorkflow) {
+        _uiState.update { state ->
+            val existing = state.customWorkflows.indexOfFirst { it.id == workflow.id }
+            val updated = if (existing >= 0) {
+                state.customWorkflows.toMutableList().apply { set(existing, workflow) }
+            } else {
+                state.customWorkflows + workflow
+            }
+            state.copy(customWorkflows = updated, showWorkflowBuilder = false, editingWorkflow = null)
+        }
+    }
+
+    fun deleteWorkflow(workflowId: String) {
+        _uiState.update { state ->
+            state.copy(customWorkflows = state.customWorkflows.filter { it.id != workflowId })
+        }
+    }
+
+    fun runWorkflow(workflow: CustomWorkflow) {
+        viewModelScope.launch {
+            workflow.steps.forEach { step ->
+                if (step.command.isNotBlank()) {
+                    repository.runFeatureByCommand(step.command, step.title)
+                    if (step.waitForResult) {
+                        delay(2000)
+                    }
+                }
+            }
+        }
+    }
+
+    fun showPluginScriptEditor(script: ScriptFile? = null) {
+        _uiState.update { it.copy(showScriptEditor = true, editingScript = script) }
+    }
+
+    fun hidePluginScriptEditor() {
+        _uiState.update { it.copy(showScriptEditor = false, editingScript = null) }
+    }
+
+    fun saveScript(script: ScriptFile) {
+        _uiState.update { state ->
+            val existing = state.savedScripts.indexOfFirst { it.id == script.id }
+            val updated = if (existing >= 0) {
+                state.savedScripts.toMutableList().apply { set(existing, script) }
+            } else {
+                state.savedScripts + script
+            }
+            state.copy(savedScripts = updated)
+        }
+    }
+
+    fun deleteScript(scriptId: String) {
+        _uiState.update { state ->
+            state.copy(savedScripts = state.savedScripts.filter { it.id != scriptId })
+        }
+    }
+
+    fun runScript(script: ScriptFile) {
+        viewModelScope.launch {
+            script.content.lines()
+                .map { it.trim() }
+                .filter { it.isNotBlank() && !it.startsWith("#") && !it.startsWith("--") }
+                .forEach { line ->
+                    repository.runFeatureByCommand(line, "Script: ${script.name}")
+                    delay(1500)
+                }
         }
     }
 

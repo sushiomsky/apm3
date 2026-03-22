@@ -8,6 +8,9 @@ import com.example.proxmark.mifare.MifareClassicDump
 import com.example.proxmark.mifare.MifareKeyState
 import com.example.proxmark.mifare.MifareWorkflow
 import com.example.proxmark.persistence.AppSettings
+import com.example.proxmark.plugins.CustomWorkflow
+import com.example.proxmark.plugins.Plugin
+import com.example.proxmark.plugins.ScriptFile
 import com.example.proxmark.protocol.TerminalLine
 import com.example.proxmark.reader.ReaderConnectionState
 import com.example.proxmark.reader.ReaderType
@@ -63,5 +66,14 @@ data class MainUiState(
     val commandHistory: List<String> = emptyList(),
     val commandMetrics: CommandMetrics = CommandMetrics(),
     val showAdvancedPanel: Boolean = false,
-    val showProtocolInspector: Boolean = false
+    val showProtocolInspector: Boolean = false,
+    // Plugin system
+    val showPluginBrowser: Boolean = false,
+    val installedPlugins: List<Plugin> = emptyList(),
+    val customWorkflows: List<CustomWorkflow> = emptyList(),
+    val showWorkflowBuilder: Boolean = false,
+    val editingWorkflow: CustomWorkflow? = null,
+    val savedScripts: List<ScriptFile> = emptyList(),
+    val showScriptEditor: Boolean = false,
+    val editingScript: ScriptFile? = null
 )

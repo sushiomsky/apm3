@@ -31,7 +31,10 @@ import com.example.proxmark.ui.components.FeatureConfirmationDialog
 import com.example.proxmark.ui.components.FeatureParameterDialog
 import com.example.proxmark.ui.components.GymLockerWorkflowDialog
 import com.example.proxmark.ui.components.KeyRecoveryDialog
+import com.example.proxmark.ui.components.PluginBrowserDialog
 import com.example.proxmark.ui.components.RawCommandCard
+import com.example.proxmark.ui.components.ScriptEditorDialog
+import com.example.proxmark.ui.components.WorkflowBuilderDialog
 import com.example.proxmark.ui.components.WorkflowViewerDialog
 import com.example.proxmark.ui.components.AdvancedModePanel
 import com.example.proxmark.usb.UsbConnectionState
@@ -156,6 +159,9 @@ fun ProxmarkApp(
                 onShowKeyRecovery = viewModel::showKeyRecovery,
                 onShowGymLockerWorkflow = viewModel::showGymLockerWorkflow,
                 onToggleAdvancedMode = viewModel::toggleAdvancedMode,
+                onShowPluginBrowser = viewModel::showPluginBrowser,
+                onShowWorkflowBuilder = { viewModel.showPluginWorkflowBuilder() },
+                onShowScriptEditor = { viewModel.showPluginScriptEditor() },
                 modifier = contentModifier
             )
 
@@ -271,6 +277,53 @@ fun ProxmarkApp(
             onRunCommand = viewModel::runGymWorkflowCommand,
             onReset = viewModel::resetKeyRecovery,
             onDismiss = viewModel::hideGymLockerWorkflow
+        )
+    }
+
+    if (uiState.showAdvancedPanel) {
+        AdvancedModePanel(
+            connected = connected,
+            commandHistory = uiState.commandHistory,
+            commandMetrics = uiState.commandMetrics,
+            showProtocolInspector = uiState.showProtocolInspector,
+            features = uiState.availableFeatures,
+            onSendCommand = viewModel::sendRawCommand,
+            onToggleProtocolInspector = viewModel::toggleProtocolInspector,
+            onClearHistory = viewModel::clearCommandHistory,
+            onDismiss = viewModel::hideAdvancedPanel
+        )
+    }
+
+    // ── Plugin System Dialogs ───────────────────────────────────────
+
+    if (uiState.showPluginBrowser) {
+        PluginBrowserDialog(
+            plugins = viewModel.getAllPluginsForBrowser(),
+            onInstallPlugin = viewModel::installPlugin,
+            onUninstallPlugin = viewModel::uninstallPlugin,
+            onTogglePluginEnabled = viewModel::togglePluginEnabled,
+            onDismiss = viewModel::hidePluginBrowser
+        )
+    }
+
+    if (uiState.showWorkflowBuilder) {
+        WorkflowBuilderDialog(
+            existingWorkflow = uiState.editingWorkflow,
+            availableCommands = uiState.availableFeatures.map { it.command }.distinct(),
+            onSaveWorkflow = viewModel::saveWorkflow,
+            onRunWorkflow = viewModel::runWorkflow,
+            onDismiss = viewModel::hidePluginWorkflowBuilder
+        )
+    }
+
+    if (uiState.showScriptEditor) {
+        ScriptEditorDialog(
+            existingScript = uiState.editingScript,
+            savedScripts = uiState.savedScripts,
+            onSaveScript = viewModel::saveScript,
+            onDeleteScript = viewModel::deleteScript,
+            onRunScript = viewModel::runScript,
+            onDismiss = viewModel::hidePluginScriptEditor
         )
     }
 }
