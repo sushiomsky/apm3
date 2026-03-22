@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Proxmark3 RDV4: 0x2D2D / 0x504D -->
+    <usb-device vendor-id="11565" product-id="20557" />
+    <!-- Proxmark3 Easy: 0x9AC4 / 0x4B8F -->
+    <usb-device vendor-id="39620" product-id="19343" />
+    <!-- ACR122U: 0x072F / 0x2200 -->
+    <usb-device vendor-id="1839" product-id="8704" />
+    <!-- ACR1251U: 0x072F / 0x2100 -->
+    <usb-device vendor-id="1839" product-id="8448" />
+    <!-- ACR1252U dual: 0x072F / 0x0901 -->
+    <usb-device vendor-id="1839" product-id="2305" />
+    <!-- ACR1252U alt: 0x072F / 0x1252 -->
+    <usb-device vendor-id="1839" product-id="4690" />
+    <!-- ACR1255U-J1: 0x072F / 0x8201 -->
+    <usb-device vendor-id="1839" product-id="33281" />
+</resources>

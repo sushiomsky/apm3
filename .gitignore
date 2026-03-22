@@ -1,0 +1,25 @@
+# Gradle
+.gradle/
+build/
+app/build/
+
+# IDE
+.idea/
+*.iml
+local.properties
+
+# OS
+.DS_Store
+._*
+Thumbs.db
+
+# NDK
+app/.cxx/
+app/src/main/jniLibs/
+
+# Secrets
+*.keystore
+*.jks
+
+# PDFs (large binaries)
+*.pdf
