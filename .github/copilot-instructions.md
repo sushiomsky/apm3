@@ -8,10 +8,10 @@ Run from repo root:
 - Build/check module: `./gradlew app:build`
 - Lint: `./gradlew app:lint` or `./gradlew app:lintDebug`
 - Unit tests: `./gradlew app:test` or `./gradlew app:testDebugUnitTest`
-- Single unit test class: `./gradlew app:testDebugUnitTest --tests "com.example.proxmark.YourTestClass"`
-- Single unit test method: `./gradlew app:testDebugUnitTest --tests "com.example.proxmark.YourTestClass.yourTestMethod"`
+- Single unit test class: `./gradlew app:testDebugUnitTest --tests "com.sushiomsky.proxmark.YourTestClass"`
+- Single unit test method: `./gradlew app:testDebugUnitTest --tests "com.sushiomsky.proxmark.YourTestClass.yourTestMethod"`
 - Instrumented tests: `./gradlew app:connectedDebugAndroidTest`
-- Single instrumented test class: `./gradlew app:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.example.proxmark.YourInstrumentedTest`
+- Single instrumented test class: `./gradlew app:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.sushiomsky.proxmark.YourInstrumentedTest`
 
 Notes:
 

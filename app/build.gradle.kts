@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.proxmark"
+    namespace = "com.sushiomsky.proxmark"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.proxmark"
+        applicationId = "com.sushiomsky.proxmark"
         minSdk = 26
         targetSdk = 34
         versionCode = 1
