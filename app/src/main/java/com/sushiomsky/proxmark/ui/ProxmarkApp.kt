@@ -11,10 +11,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -59,6 +63,16 @@ fun ProxmarkApp(
         uiState.availableFeatures.find { it.id == id }
     }
 
+    // Errors were previously swallowed: surface them globally so a failed
+    // action (e.g. "PM3 not connected") is never a silent no-op.
+    val snackbarHostState = remember { SnackbarHostState() }
+    LaunchedEffect(uiState.errorMessage) {
+        uiState.errorMessage?.let { message ->
+            snackbarHostState.showSnackbar(message)
+            viewModel.clearError()
+        }
+    }
+
     val connected = uiState.connectionState is UsbConnectionState.Connected
     val nfcConnected = uiState.readerStates[ReaderType.BUILTIN_NFC] is ReaderConnectionState.Connected
     val favoriteIds = uiState.settings.favoriteFeatureIds
@@ -81,6 +95,7 @@ fun ProxmarkApp(
     val tabs = AppTab.entries
 
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
             NavigationBar {
                 tabs.forEachIndexed { index, tab ->

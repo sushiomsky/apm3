@@ -11,18 +11,26 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,8 +64,10 @@ fun TagsScreen(
     modifier: Modifier = Modifier
 ) {
     var selectedTag by remember { mutableStateOf<TagInfo?>(null) }
-    var showGroupDialog by remember { mutableStateOf(false) }
-    var groupsExpanded by remember { mutableStateOf(true) }
+    var showGroupDialog by rememberSaveable { mutableStateOf(false) }
+    var groupsExpanded by rememberSaveable { mutableStateOf(true) }
+    // "all" | "selected" | null — destructive deletes need explicit confirmation.
+    var confirmDeleteTarget by rememberSaveable { mutableStateOf<String?>(null) }
 
     val filteredTags = if (tagSearchQuery.isBlank()) {
         savedTags
@@ -122,7 +132,7 @@ fun TagsScreen(
                         Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                             if (tagSelectionMode && selectedTagIds.isNotEmpty()) {
                                 Button(
-                                    onClick = onDeleteSelectedTags,
+                                    onClick = { confirmDeleteTarget = "selected" },
                                     colors = ButtonDefaults.buttonColors(
                                         containerColor = MaterialTheme.colorScheme.error
                                     )
@@ -138,7 +148,7 @@ fun TagsScreen(
                             }
                             if (!tagSelectionMode) {
                                 OutlinedButton(
-                                    onClick = onClearSavedTags,
+                                    onClick = { confirmDeleteTarget = "all" },
                                     enabled = savedTags.isNotEmpty()
                                 ) { Text("Clear", style = MaterialTheme.typography.labelSmall) }
                             }
@@ -150,6 +160,14 @@ fun TagsScreen(
                             value = tagSearchQuery,
                             onValueChange = onSetTagSearchQuery,
                             label = { Text("Search tags") },
+                            leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
+                            trailingIcon = {
+                                if (tagSearchQuery.isNotEmpty()) {
+                                    IconButton(onClick = { onSetTagSearchQuery("") }) {
+                                        Icon(Icons.Filled.Close, contentDescription = "Clear search")
+                                    }
+                                }
+                            },
                             singleLine = true,
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -226,6 +244,35 @@ fun TagsScreen(
         CreateGroupDialog(
             onConfirm = { name -> onCreateTagGroup(name); showGroupDialog = false },
             onDismiss = { showGroupDialog = false }
+        )
+    }
+
+    confirmDeleteTarget?.let { target ->
+        val isAll = target == "all"
+        AlertDialog(
+            onDismissRequest = { confirmDeleteTarget = null },
+            title = { Text(if (isAll) "Clear all saved tags?" else "Delete selected tags?") },
+            text = {
+                Text(
+                    if (isAll) "This permanently removes all ${savedTags.size} saved tags. This cannot be undone."
+                    else "This permanently removes ${selectedTagIds.size} selected tags. This cannot be undone.",
+                    style = MaterialTheme.typography.bodySmall
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        if (isAll) onClearSavedTags() else onDeleteSelectedTags()
+                        confirmDeleteTarget = null
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error
+                    )
+                ) { Text("Delete") }
+            },
+            dismissButton = {
+                TextButton(onClick = { confirmDeleteTarget = null }) { Text("Cancel") }
+            }
         )
     }
 

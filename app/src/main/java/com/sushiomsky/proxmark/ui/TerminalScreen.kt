@@ -16,18 +16,20 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ClearAll
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Terminal
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,9 +41,9 @@ import androidx.compose.ui.unit.sp
 import com.sushiomsky.proxmark.protocol.TerminalLine
 import com.sushiomsky.proxmark.protocol.TerminalLineType
 
-private val terminalBg = Color(0xFF1A1A2E)
+private val terminalBg = Color(0xFF101512)
 private val sentColor = Color(0xFF00BCD4)
-private val receivedColor = Color(0xFF4CAF50)
+private val receivedColor = Color(0xFF4ADE80)
 private val errorColor = Color(0xFFFF5252)
 private val systemColor = Color(0xFF9E9E9E)
 
@@ -56,13 +58,17 @@ fun TerminalScreen(
     onExportLog: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    var commandInput by remember { mutableStateOf("") }
+    var commandInput by rememberSaveable { mutableStateOf("") }
     val listState = rememberLazyListState()
 
-    // Auto-scroll to bottom when new lines arrive
+    // Follow output only when the user is already at the bottom —
+    // don't yank the list away while they're reading earlier lines.
     LaunchedEffect(terminalLines.size) {
         if (terminalLines.isNotEmpty()) {
-            listState.animateScrollToItem(terminalLines.size - 1)
+            val lastVisible = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+            if (lastVisible >= terminalLines.size - 3) {
+                listState.animateScrollToItem(terminalLines.size - 1)
+            }
         }
     }
 
@@ -144,11 +150,11 @@ fun TerminalScreen(
                     }
                 })
             )
-            TextButton(onClick = onExportLog, enabled = terminalLines.isNotEmpty()) {
-                Text("EXP", fontSize = 11.sp)
+            IconButton(onClick = onExportLog, enabled = terminalLines.isNotEmpty()) {
+                Icon(Icons.Filled.Share, contentDescription = "Export log")
             }
-            TextButton(onClick = onClear) {
-                Text("CLR", fontSize = 11.sp)
+            IconButton(onClick = onClear, enabled = terminalLines.isNotEmpty()) {
+                Icon(Icons.Filled.ClearAll, contentDescription = "Clear terminal")
             }
         }
     }
