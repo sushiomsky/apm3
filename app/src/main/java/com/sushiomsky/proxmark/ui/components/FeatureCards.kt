@@ -39,29 +39,30 @@ internal fun FeatureExecutionCard(
     val title: String
     val body: String
     val color: Color
+    val scheme = MaterialTheme.colorScheme
     when (state) {
         FeatureExecutionState.Idle -> {
             title = "Ready"
             body = "Select an action to run on the connected PM3."
-            color = Color(0xFF455A64)
+            color = scheme.onSurfaceVariant
         }
 
         is FeatureExecutionState.Running -> {
             title = "Running"
             body = "Executing ${state.title}..."
-            color = Color(0xFFEF6C00)
+            color = scheme.tertiary
         }
 
         is FeatureExecutionState.Success -> {
             title = "Completed"
             body = state.output ?: "${state.title} completed."
-            color = Color(0xFF2E7D32)
+            color = scheme.primary
         }
 
         is FeatureExecutionState.Failed -> {
             title = "Failed"
             body = state.message
-            color = Color(0xFFC62828)
+            color = scheme.error
         }
     }
 
@@ -156,18 +157,21 @@ internal fun FeatureConfirmationDialog(
                 Text("Action: ${feature.title}")
                 Text(feature.description, style = MaterialTheme.typography.bodySmall)
                 feature.warningMessage?.let { warning ->
+                    val isDestructive = feature.safetyLevel == FeatureSafetyLevel.DESTRUCTIVE
                     Card(
                         colors = CardDefaults.cardColors(
-                            containerColor = if (feature.safetyLevel == FeatureSafetyLevel.DESTRUCTIVE)
-                                Color(0xFFFFEBEE) else Color(0xFFFFF3E0)
+                            containerColor = if (isDestructive)
+                                MaterialTheme.colorScheme.errorContainer
+                            else MaterialTheme.colorScheme.tertiaryContainer
                         )
                     ) {
                         Column(modifier = Modifier.padding(8.dp)) {
                             Text(
                                 text = "Why is this risky?",
                                 style = MaterialTheme.typography.labelMedium,
-                                color = if (feature.safetyLevel == FeatureSafetyLevel.DESTRUCTIVE)
-                                    Color(0xFFC62828) else Color(0xFFE65100)
+                                color = if (isDestructive)
+                                    MaterialTheme.colorScheme.onErrorContainer
+                                else MaterialTheme.colorScheme.onTertiaryContainer
                             )
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(
@@ -227,11 +231,16 @@ internal fun FeatureParameterDialog(
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 Text(feature.description, style = MaterialTheme.typography.bodySmall)
                 if (feature.warningMessage != null) {
-                    Card(colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF3E0))) {
+                    Card(
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.tertiaryContainer
+                        )
+                    ) {
                         Text(
                             text = "⚠ ${feature.warningMessage}",
                             modifier = Modifier.padding(8.dp),
-                            style = MaterialTheme.typography.bodySmall
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onTertiaryContainer
                         )
                     }
                 }

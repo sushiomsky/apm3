@@ -132,6 +132,32 @@ class MainViewModel(private val repository: ProxmarkRepository) : ViewModel() {
     fun runFeature(feature: ProxmarkFeature, paramValues: Map<String, String> = emptyMap()) =
         repository.runFeature(feature, paramValues)
 
+    // ── Pending feature confirmation (rotation-safe) ────────────────────
+    // Decides whether a feature needs a parameter/confirmation dialog first.
+    // The pending id lives in uiState so an open dialog survives rotation.
+
+    fun requestRunFeature(feature: ProxmarkFeature) {
+        if (feature.parameters.isNotEmpty() ||
+            (feature.safetyLevel.requiresConfirmation && !uiState.value.skipConfirmations)
+        ) {
+            _uiState.update { it.copy(pendingFeatureId = feature.id) }
+        } else {
+            runFeature(feature)
+        }
+    }
+
+    fun confirmPendingFeature(paramValues: Map<String, String> = emptyMap()) {
+        val pending = uiState.value.pendingFeatureId?.let { id ->
+            uiState.value.availableFeatures.find { it.id == id }
+        } ?: return
+        _uiState.update { it.copy(pendingFeatureId = null) }
+        runFeature(pending, paramValues)
+    }
+
+    fun dismissPendingFeature() {
+        _uiState.update { it.copy(pendingFeatureId = null) }
+    }
+
     fun clearError() = repository.clearError()
 
     fun clearSavedTags() = repository.clearSavedTags()

@@ -42,6 +42,9 @@ data class MainUiState(
     val skipConfirmations: Boolean = false,
     val tagSearchQuery: String = "",
     val featureSearchQuery: String = "",
+    // Pending feature awaiting confirmation/parameters. Lives in the ViewModel
+    // (not composable remember state) so the dialog survives rotation.
+    val pendingFeatureId: String? = null,
     val settings: AppSettings = AppSettings(),
     val autoScanEnabled: Boolean = false,
     val activeReaderType: ReaderType = ReaderType.PROXMARK3,

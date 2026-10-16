@@ -37,6 +37,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -96,9 +97,9 @@ fun HomeScreen(
     val activeReaderState = readerStates[activeReaderType]
     val activeReaderConnected = activeReaderState is ReaderConnectionState.Connected
     val activeReaderConnecting = activeReaderState is ReaderConnectionState.Connecting
-    var showSettings by remember { mutableStateOf(false) }
-    var lastScanExpanded by remember { mutableStateOf(false) }
-    var historyExpanded by remember { mutableStateOf(false) }
+    var showSettings by rememberSaveable { mutableStateOf(false) }
+    var lastScanExpanded by rememberSaveable { mutableStateOf(false) }
+    var historyExpanded by rememberSaveable { mutableStateOf(false) }
 
     LazyColumn(
         modifier = modifier

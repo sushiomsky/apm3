@@ -5,7 +5,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Terminal
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -15,8 +15,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -40,11 +38,11 @@ import com.sushiomsky.proxmark.ui.components.AdvancedModePanel
 import com.sushiomsky.proxmark.usb.UsbConnectionState
 import com.sushiomsky.proxmark.viewmodel.MainViewModel
 
-private enum class AppTab(val label: String, val iconName: String) {
-    HOME("Home", "home"),
-    TOOLS("Tools", "build"),
-    TAGS("Tags", "list"),
-    TERMINAL("Terminal", "terminal")
+private enum class AppTab(val label: String) {
+    HOME("Home"),
+    TOOLS("Tools"),
+    TAGS("Tags"),
+    TERMINAL("Terminal")
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -54,8 +52,12 @@ fun ProxmarkApp(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var selectedTab by rememberSaveable { mutableIntStateOf(0) }
-    var pendingConfirmationFeature by remember { mutableStateOf<ProxmarkFeature?>(null) }
-    var pendingParameterFeature by remember { mutableStateOf<ProxmarkFeature?>(null) }
+
+    // Rotation-safe: the pending feature id lives in uiState (ViewModel),
+    // so an open confirmation/parameter dialog survives rotation.
+    val pendingFeature = uiState.pendingFeatureId?.let { id ->
+        uiState.availableFeatures.find { it.id == id }
+    }
 
     val connected = uiState.connectionState is UsbConnectionState.Connected
     val nfcConnected = uiState.readerStates[ReaderType.BUILTIN_NFC] is ReaderConnectionState.Connected
@@ -65,13 +67,7 @@ fun ProxmarkApp(
     val favoriteFeatures = uiState.availableFeatures.filter { it.id in favoriteIds }
 
     val maybeConfirmThenRun: (ProxmarkFeature) -> Unit = { feature ->
-        if (feature.parameters.isNotEmpty()) {
-            pendingParameterFeature = feature
-        } else if (feature.safetyLevel.requiresConfirmation && !uiState.skipConfirmations) {
-            pendingConfirmationFeature = feature
-        } else {
-            viewModel.runFeature(feature)
-        }
+        viewModel.requestRunFeature(feature)
     }
 
     val isFeatureEnabled: (ProxmarkFeature) -> Boolean = { feature ->
@@ -94,7 +90,7 @@ fun ProxmarkApp(
                                 AppTab.HOME -> Icon(Icons.Default.Home, contentDescription = tab.label)
                                 AppTab.TOOLS -> Icon(Icons.Default.Build, contentDescription = tab.label)
                                 AppTab.TAGS -> Icon(Icons.Default.List, contentDescription = tab.label)
-                                AppTab.TERMINAL -> Icon(Icons.Default.Menu, contentDescription = tab.label)
+                                AppTab.TERMINAL -> Icon(Icons.Default.Terminal, contentDescription = tab.label)
                             }
                         },
                         label = { Text(tab.label) },
@@ -201,31 +197,24 @@ fun ProxmarkApp(
 
     // ── Global dialogs ──────────────────────────────────────────────
 
-    pendingConfirmationFeature?.let { feature ->
-        FeatureConfirmationDialog(
-            feature = feature,
-            onConfirm = {
-                viewModel.runFeature(feature)
-                pendingConfirmationFeature = null
-            },
-            onDismiss = { pendingConfirmationFeature = null },
-            onSkipFutureConfirmations = {
-                viewModel.setSkipConfirmations(true)
-                viewModel.runFeature(feature)
-                pendingConfirmationFeature = null
-            }
-        )
-    }
-
-    pendingParameterFeature?.let { feature ->
-        FeatureParameterDialog(
-            feature = feature,
-            onRun = { paramValues ->
-                viewModel.runFeature(feature, paramValues)
-                pendingParameterFeature = null
-            },
-            onDismiss = { pendingParameterFeature = null }
-        )
+    pendingFeature?.let { feature ->
+        if (feature.parameters.isNotEmpty()) {
+            FeatureParameterDialog(
+                feature = feature,
+                onRun = { paramValues -> viewModel.confirmPendingFeature(paramValues) },
+                onDismiss = viewModel::dismissPendingFeature
+            )
+        } else {
+            FeatureConfirmationDialog(
+                feature = feature,
+                onConfirm = { viewModel.confirmPendingFeature() },
+                onDismiss = viewModel::dismissPendingFeature,
+                onSkipFutureConfirmations = {
+                    viewModel.setSkipConfirmations(true)
+                    viewModel.confirmPendingFeature()
+                }
+            )
+        }
     }
 
     if (uiState.showDumpViewer && uiState.mifareDumpToView != null) {
